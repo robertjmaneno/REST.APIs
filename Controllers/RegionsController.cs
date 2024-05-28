@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Validations;
 using REST.APIs.Data;
 using REST.APIs.Models.Domain;
 using REST.APIs.Models.DTOs;
+using REST.APIs.Repositories;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -12,21 +14,16 @@ namespace REST.APIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RegionsController : ControllerBase
+    public class RegionsController(IRegionRepository regionRepository) : ControllerBase
     {
-        private readonly ApplicationDbContext _applicationDbContext;
-
-        public RegionsController(ApplicationDbContext applicationDbContext)
-        {
-            _applicationDbContext = applicationDbContext;
-        }
-
+        
+        private readonly IRegionRepository _regionRepository = regionRepository;
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
 
-            var regionsFromDomain =  await _applicationDbContext.Region.ToListAsync();
+            var regionsFromDomain =  await _regionRepository.GetAllAsync();
             var regionsDtos = new List<RegionDto>();
             foreach (var region in regionsFromDomain)
             {
@@ -46,22 +43,22 @@ namespace REST.APIs.Controllers
 
         }
 
-        // Get single region
+
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
 
 
         {
 
-            //Getting region from domain model
-            var regionDomain = await _applicationDbContext.Region.FirstOrDefaultAsync(u => u.Id == id);
+
+            var regionDomain = await _regionRepository.GetByIdAsync(id);
 
             if (regionDomain == null)
             {
                 return NotFound(id);
             }
 
-            //mapping domain model to dto
+            
 
             var regionDto = new RegionDto
             {
@@ -85,8 +82,7 @@ namespace REST.APIs.Controllers
                 RegionImageUrl = addRegionRequestDto.RegionImageUrl,
             };
 
-           await _applicationDbContext.Region.AddAsync(regionDomain);
-           await _applicationDbContext.SaveChangesAsync();
+           await _regionRepository.CreateAsync(regionDomain);
 
             var regionDto = new AddRegionRequestDto
             {
@@ -101,23 +97,43 @@ namespace REST.APIs.Controllers
         [HttpPut("{id:Guid}")]
         public async Task<IActionResult> UpdateRegion([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
+            var regionalModal = new Region
+            {
+                Code = updateRegionRequestDto.Code,
+                Name = updateRegionRequestDto.Name,
+                RegionImageUrl = updateRegionRequestDto.RegionImageUrl
+            };
 
-            var regionModel = await _applicationDbContext.Region.FirstOrDefaultAsync(u => u.Id == id);
+            regionalModal = await _regionRepository.UpdateAsync(id, regionalModal);
+            if(regionalModal == null) { 
+
+                return NotFound();
+            }
+
+            var regionDto = new Region
+            {
+                Code = regionalModal.Code,
+                Name = regionalModal.Name,
+                RegionImageUrl = regionalModal.RegionImageUrl,
+            };
+
+            return Ok(regionDto);
+
+        }
+
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> DeleteRegion([FromRoute] Guid id)
+        {
+
+            var regionModel = await _regionRepository.DeleteAsync(id);
 
 
             if (regionModel == null)
             {
                 return NotFound();
             }
-            regionModel.Code = updateRegionRequestDto.Code;
-            regionModel.Name = updateRegionRequestDto.Name;
-            regionModel.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
 
-            _applicationDbContext.Region.Update(regionModel);
-
-            _applicationDbContext.SaveChanges();
-
-            var regionDto = new RegionDto
+            var regionDto = new Region
             {
                 Code = regionModel.Code,
                 Name = regionModel.Name,
@@ -125,30 +141,6 @@ namespace REST.APIs.Controllers
             };
 
             return Ok(regionDto);
-        }
-
-
-
-
-
-        [HttpDelete("{id:Guid}")]
-        public async Task<IActionResult> DeleteRegion([FromRoute] Guid id)
-        {
-
-            var regionModel = await _applicationDbContext.Region.FirstOrDefaultAsync(u => u.Id == id);
-
-
-            if (regionModel == null)
-            {
-                return NotFound();
-            }
-
-            _applicationDbContext.Region.Remove(regionModel);
-
-            await _applicationDbContext.SaveChangesAsync();
-
-
-            return NoContent();
         }
 
     }
