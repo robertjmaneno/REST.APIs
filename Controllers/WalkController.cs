@@ -68,6 +68,7 @@ namespace REST.APIs.Controllers
             return Ok(walksDtoModel);
         }
 
+
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetWalkById([FromRoute] Guid id)
         {
@@ -99,6 +100,7 @@ namespace REST.APIs.Controllers
 
 
         }
+
 
         [HttpPut("{id:Guid}")]
         public async Task<IActionResult> Update([FromBody] UpdateWalkDto updateWalkDto, [FromRoute] Guid id)
@@ -135,6 +137,11 @@ namespace REST.APIs.Controllers
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var walkModelDomain = await _walkRepository.Delete(id);
+
+            if (walkModelDomain == null)
+            {
+                return NotFound();
+            }
 
             var walkDtoModel = new DeleteWalkDtoRequest
             {

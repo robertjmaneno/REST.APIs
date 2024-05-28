@@ -75,55 +75,68 @@ namespace REST.APIs.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(AddRegionRequestDto addRegionRequestDto)
         {
-            var regionDomain = new Region
+            if (ModelState.IsValid)
             {
-                Code = addRegionRequestDto.Code,
-                Name = addRegionRequestDto.Name,
-                RegionImageUrl = addRegionRequestDto.RegionImageUrl,
-            };
+                var regionDomain = new Region
+                {
+                    Code = addRegionRequestDto.Code,
+                    Name = addRegionRequestDto.Name,
+                    RegionImageUrl = addRegionRequestDto.RegionImageUrl,
+                };
 
-           await _regionRepository.CreateAsync(regionDomain);
+                await _regionRepository.CreateAsync(regionDomain);
 
-            var regionDto = new AddRegionRequestDto
+                var regionDto = new AddRegionRequestDto
+                {
+                    Code = regionDomain.Code,
+                    Name = regionDomain.Name,
+                    RegionImageUrl = regionDomain.RegionImageUrl,
+                };
+
+                return CreatedAtAction(nameof(GetById), new { Id = regionDomain.Id }, regionDto);
+
+            }
+            else
             {
-                Code = regionDomain.Code,
-                Name = regionDomain.Name,
-                RegionImageUrl = regionDomain.RegionImageUrl,
-            };
-
-            return CreatedAtAction(nameof(GetById), new { Id = regionDomain.Id }, regionDto);
-
+                return BadRequest(ModelState);
+            }
         }
         [HttpPut("{id:Guid}")]
         public async Task<IActionResult> UpdateRegion([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
-            var regionalModal = new Region
+
+            if (ModelState.IsValid)
             {
-                Code = updateRegionRequestDto.Code,
-                Name = updateRegionRequestDto.Name,
-                RegionImageUrl = updateRegionRequestDto.RegionImageUrl
-            };
+                var regionalModal = new Region
+                {
+                    Code = updateRegionRequestDto.Code,
+                    Name = updateRegionRequestDto.Name,
+                    RegionImageUrl = updateRegionRequestDto.RegionImageUrl
+                };
 
-            regionalModal = await _regionRepository.UpdateAsync(id, regionalModal);
-            if(regionalModal == null) { 
+                regionalModal = await _regionRepository.UpdateAsync(id, regionalModal);
+                if (regionalModal == null)
+                {
 
-                return NotFound();
+                    return NotFound();
+                }
+
+                var regionDto = new Region
+                {
+                    Code = regionalModal.Code,
+                    Name = regionalModal.Name,
+                    RegionImageUrl = regionalModal.RegionImageUrl,
+                };
+
+                return Ok(regionDto);
             }
 
-            var regionDto = new Region
-            {
-                Code = regionalModal.Code,
-                Name = regionalModal.Name,
-                RegionImageUrl = regionalModal.RegionImageUrl,
-            };
-
-            return Ok(regionDto);
-
+            return BadRequest(ModelState);
         }
 
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteRegion([FromRoute] Guid id)
-        {
+        { 
 
             var regionModel = await _regionRepository.DeleteAsync(id);
 
