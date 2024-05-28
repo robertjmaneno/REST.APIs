@@ -20,7 +20,7 @@ namespace REST.APIs.Controllers
 
 
             var walkDto = new Walk
-            {  
+            {
                 Name = walk.Name,
                 Description = walk.Description,
                 LengthInKm = walk.LengthInKm,
@@ -29,12 +29,12 @@ namespace REST.APIs.Controllers
                 RegionId = walk.RegionId,
             };
 
-            
-            
+
+
             return Ok(walkDto);
         }
 
-        
+
         [HttpGet]
         public async Task<IActionResult> GetAllWalks()
         {
@@ -44,7 +44,7 @@ namespace REST.APIs.Controllers
             foreach (var walk in walksDomainModel)
             {
                 var walksDto = new WalksDto
-                { 
+                {
                     Id = walk.Id,
                     Name = walk.Name,
                     Description = walk.Description,
@@ -57,9 +57,9 @@ namespace REST.APIs.Controllers
                         RegionImageUrl = walk.Region.RegionImageUrl,
                     },
                     DifficuiltyDto = new DifficuiltyDto
-                    {   Id = walk.Difficuilty.Id,                     
+                    { Id = walk.Difficuilty.Id,
                         Name = walk.Difficuilty.Name,
-                        
+
                     }
                 };
                 walksDtoModel.Add(walksDto);
@@ -69,12 +69,11 @@ namespace REST.APIs.Controllers
         }
 
         [HttpGet("{id:Guid}")]
-
         public async Task<IActionResult> GetWalkById([FromRoute] Guid id)
         {
-            var walkDomainModel  = await _walkRepository.GetWalkById(id);
+            var walkDomainModel = await _walkRepository.GetWalkById(id);
             var walkDto = new WalksDto
-            {  Id = walkDomainModel.Id,
+            { Id = walkDomainModel.Id,
                 Name = walkDomainModel.Name,
                 Description = walkDomainModel.Description,
                 WalkImageUrl = walkDomainModel.WalkImageUrl,
@@ -93,17 +92,68 @@ namespace REST.APIs.Controllers
                 }
 
             };
-           
+
 
             return Ok(walkDto);
 
 
 
+        }
+
+        [HttpPut("{id:Guid}")]
+        public async Task<IActionResult> Update([FromBody] UpdateWalkDto updateWalkDto, [FromRoute] Guid id)
+        {
+            var walkDomainModel = new Walk
+            {
+                Name = updateWalkDto.Name,
+                Description = updateWalkDto.Description,
+                WalkImageUrl = updateWalkDto.WalkImageUrl,
+                LengthInKm = updateWalkDto.LengthInKm,
+                RegionId = updateWalkDto.RegionId,
+                DifficuiltyId = updateWalkDto.DifficuiltyId
+            };
+
+            await _walkRepository.Update(id, walkDomainModel);
+
+            updateWalkDto = new UpdateWalkDto
+            {
+                Name = walkDomainModel.Name,
+                Description = walkDomainModel.Description,
+                WalkImageUrl = walkDomainModel.WalkImageUrl,
+                LengthInKm = walkDomainModel.LengthInKm,
+                RegionId = walkDomainModel.RegionId,
+                DifficuiltyId = walkDomainModel.DifficuiltyId
+
+            };
+
+            return Ok(updateWalkDto);
+
+        }
+
+
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            var walkModelDomain = await _walkRepository.Delete(id);
+
+            var walkDtoModel = new DeleteWalkDtoRequest
+            {
+                Id = walkModelDomain.Id,
+                Name = walkModelDomain.Name,
+                Description = walkModelDomain.Description,
+                WalkImageUrl = walkModelDomain.WalkImageUrl,
+                LengthInKm = walkModelDomain.LengthInKm,
+                RegionId = walkModelDomain.RegionId,
+                DifficuiltyId = walkModelDomain.DifficuiltyId
+
+            };
+
+            return Ok(walkDtoModel);
+        }
+
     }
 
-
-
-    }
+    
 
 
 }

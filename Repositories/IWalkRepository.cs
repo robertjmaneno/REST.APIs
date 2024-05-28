@@ -8,5 +8,8 @@ namespace REST.APIs.Repositories
         Task<List<Walk>> GetAllWalksAsync();
 
         Task<Walk?> GetWalkById(Guid id);
+        Task<Walk?> Update(Guid id, Walk walk);
+
+        Task<Walk?> Delete(Guid id);
     }
 }

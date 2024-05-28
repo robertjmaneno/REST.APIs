@@ -21,6 +21,25 @@ namespace REST.APIs.Repositories
            
         }
 
+        public async Task<Walk?> Delete(Guid id)
+        {
+           var walkModel = await _applicationDbContext.Walk.FirstOrDefaultAsync(x => x.Id == id);
+            if (walkModel == null)
+            {
+                return null;
+            }
+            _applicationDbContext.Remove(walkModel);
+            _applicationDbContext.SaveChanges();
+
+            return walkModel;
+
+        }
+
+        public Task<Walk?> Delete(Guid id, Walk walk)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<Walk>> GetAllWalksAsync()
         {
            var walks = await  _applicationDbContext.Walk.Include("Difficuilty").Include("Region").ToListAsync();
@@ -39,6 +58,27 @@ namespace REST.APIs.Repositories
             }
 
             return walk;
+        }
+
+        public async Task<Walk?> Update(Guid id, Walk walk)
+        {
+            var existingWalk = await _applicationDbContext.Walk.FindAsync(id);
+            
+            if(existingWalk == null)
+            {
+                return null;
+            }
+            existingWalk.Name = walk.Name;
+            existingWalk.Description = walk.Description;
+            existingWalk.WalkImageUrl = walk.WalkImageUrl;
+            existingWalk.LengthInKm = walk.LengthInKm;
+            existingWalk.DifficuiltyId = walk.DifficuiltyId;
+            existingWalk.RegionId = walk.RegionId;
+
+            await _applicationDbContext.SaveChangesAsync();
+
+
+            return(existingWalk);
         }
     }
 }
