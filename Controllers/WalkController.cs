@@ -4,7 +4,6 @@ using REST.APIs.Models.Domain;
 using REST.APIs.Models.DTOs;
 using REST.APIs.Repositories;
 using System.Runtime.CompilerServices;
-
 namespace REST.APIs.Controllers
 {
     [Route("api/[controller]")]
@@ -36,9 +35,12 @@ namespace REST.APIs.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllWalks()
+        public async Task<IActionResult> GetAllWalks([FromQuery] string? filterOn, 
+            [FromQuery] string? filterQuerry, [FromQuery] string? sortBy, [FromQuery]bool? isAscending, 
+            [FromQuery] int pageNumber = 5, [FromQuery] int pageSize =10 )
         {
-            var walksDomainModel = await _walkRepository.GetAllWalksAsync();
+            var walksDomainModel = await _walkRepository.GetAllWalksAsync(filterOn,
+                filterQuerry, sortBy, isAscending?? true, pageNumber, pageSize);
             var walksDtoModel = new List<WalksDto>();
 
             foreach (var walk in walksDomainModel)
