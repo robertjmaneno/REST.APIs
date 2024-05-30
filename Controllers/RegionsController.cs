@@ -15,6 +15,8 @@ namespace REST.APIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
+
     [Authorize]
     public class RegionsController(IRegionRepository regionRepository) : ControllerBase
     {
