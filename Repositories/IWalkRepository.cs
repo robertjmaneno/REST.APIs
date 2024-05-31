@@ -8,7 +8,6 @@ namespace REST.APIs.Repositories
         Task<List<Walk>> GetAllWalksAsync(string? filterOn=null,
             string? filterQuerry=null, string? sortBy=null, bool isAscending=true, int pageNumber=5,
             int pageSize = 10);
-
         Task<Walk?> GetWalkById(Guid id);
         Task<Walk?> Update(Guid id, Walk walk);
 

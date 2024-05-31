@@ -39,31 +39,21 @@ namespace REST.APIs.Controllers
                     Code = region.Code,
                     RegionImageUrl = region.RegionImageUrl,
                 };
-
                 regionsDtos.Add(regionDto);
             }
 
             return Ok(regionsDtos);
 
         }
-
-
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
-
-
         {
-
-
             var regionDomain = await _regionRepository.GetByIdAsync(id);
 
             if (regionDomain == null)
             {
                 return NotFound(id);
             }
-
-            
-
             var regionDto = new RegionDto
             {
                 Id = regionDomain.Id,

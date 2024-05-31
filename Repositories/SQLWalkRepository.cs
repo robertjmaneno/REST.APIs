@@ -76,9 +76,6 @@ namespace REST.APIs.Repositories
           //pagination
 
             var skipResults = (pageSize - 1) * pageNumber;
-
-
-
             return await walks.Skip(skipResults).Take(pageSize).ToListAsync();
         }
 
@@ -98,7 +95,6 @@ namespace REST.APIs.Repositories
         public async Task<Walk?> Update(Guid id, Walk walk)
         {
             var existingWalk = await _applicationDbContext.Walk.FindAsync(id);
-            
             if(existingWalk == null)
             {
                 return null;
@@ -109,7 +105,6 @@ namespace REST.APIs.Repositories
             existingWalk.LengthInKm = walk.LengthInKm;
             existingWalk.DifficuiltyId = walk.DifficuiltyId;
             existingWalk.RegionId = walk.RegionId;
-
             await _applicationDbContext.SaveChangesAsync();
 
 

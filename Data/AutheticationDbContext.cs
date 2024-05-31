@@ -25,8 +25,6 @@ namespace REST.APIs.Data
                     ConcurrencyStamp ="e1e72a43-a32b-42f9-b913-607dcb893a61",
                     Name = "Reader",
                     NormalizedName ="Reader".ToUpper(),
-
-
                 },
                    new IdentityRole
                 {

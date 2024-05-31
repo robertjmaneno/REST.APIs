@@ -21,7 +21,6 @@ builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
 
 
-
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>() 
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("Walks")

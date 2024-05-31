@@ -52,6 +52,7 @@ namespace REST.APIs.Controllers
                     Description = walk.Description,
                     WalkImageUrl = walk.WalkImageUrl,
                     LengthInKm = walk.LengthInKm,
+
                     RegionDto = new RegionDto {
                         Id = walk.Region.Id,
                         Code = walk.Region.Code,
