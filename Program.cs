@@ -9,7 +9,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,11 +20,14 @@ builder.Services.AddDbContext<AuthenticationDbContext>(options =>
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
 
+
+
 builder.Services.AddIdentityCore<IdentityUser>()
-    .AddRoles<IdentityUser>()
+    .AddRoles<IdentityRole>() 
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("Walks")
     .AddEntityFrameworkStores<AuthenticationDbContext>()
     .AddDefaultTokenProviders();
+
 
 builder.Services.Configure<IdentityOptions>(options =>{
 options.Password.RequireNonAlphanumeric = false;
