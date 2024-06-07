@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using REST.APIs.Models.DTOs;
+using REST.APIs.Repositories;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,14 +10,11 @@ namespace REST.APIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(UserManager<IdentityUser> userManager, 
+        ITokenCreationRepository tokenCreationRepository) : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public AuthController(UserManager<IdentityUser> userManager)
-        {
-            _userManager = userManager;
-        }
+        private readonly UserManager<IdentityUser> _userManager = userManager;
+        private readonly ITokenCreationRepository tokenCreationRepository = tokenCreationRepository;
 
         [HttpPost]
         [Route("Register")]
@@ -65,7 +63,25 @@ namespace REST.APIs.Controllers
 
                 if (loginResult)
                 {
-                    // Generate token
+
+                    //Get roles
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles != null && roles.Any())
+                    {
+                        // Generate token
+                     var jwtToken  =  tokenCreationRepository.TokenCreation(user, roles.ToList());
+
+                        var response = new LoginResponseDto
+                        {
+                            JwtToken = jwtToken,
+                        };
+
+                        return Ok(response);
+
+                    }
+
+
+                   
                     return Ok("Login successful"); 
                 }
             }

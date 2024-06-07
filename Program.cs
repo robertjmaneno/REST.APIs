@@ -19,6 +19,7 @@ builder.Services.AddDbContext<AuthenticationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AutheticationConnectionString")));
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
+builder.Services.AddScoped<ITokenCreationRepository,  TokenCreationRepository>();
 
 
 builder.Services.AddIdentityCore<IdentityUser>()

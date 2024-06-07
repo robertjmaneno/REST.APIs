@@ -1,10 +1,11 @@
-﻿namespace REST.APIs.Repositories
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace REST.APIs.Repositories
 {
     public interface ITokenCreationRepository
     {
 
-        public TokenCreation()
-        {         
-        }
+        string TokenCreation(IdentityUser user, List<string> roles);
+
     }
 }
