@@ -13,6 +13,8 @@ namespace REST.APIs.Data
         public DbSet<Difficuilty> Difficuilty { get; set;}
         public DbSet<Region> Region { get; set;}
 
+        public DbSet<Image> Images { get; set;}
+
         public DbSet<Walk> Walk { get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

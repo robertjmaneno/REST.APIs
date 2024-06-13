@@ -17,13 +17,15 @@ namespace REST.APIs.Controllers
     [ApiController]
 
 
-    [Authorize]
+
     public class RegionsController(IRegionRepository regionRepository) : ControllerBase
     {
         
         private readonly IRegionRepository _regionRepository = regionRepository;
 
         [HttpGet]
+
+        [Authorize(Roles = "Reader, Creater")]
         public async Task<IActionResult> GetAll()
         {
 
@@ -46,6 +48,8 @@ namespace REST.APIs.Controllers
 
         }
         [HttpGet("{id:Guid}")]
+
+        [Authorize(Roles = "Reader, Creater")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var regionDomain = await _regionRepository.GetByIdAsync(id);
@@ -67,6 +71,7 @@ namespace REST.APIs.Controllers
         }
 
         [HttpPost]
+        [Authorize("Creator")]
         public async Task<IActionResult> Create(AddRegionRequestDto addRegionRequestDto)
         {
             if (ModelState.IsValid)
@@ -95,7 +100,10 @@ namespace REST.APIs.Controllers
                 return BadRequest(ModelState);
             }
         }
+       
+        
         [HttpPut("{id:Guid}")]
+        [Authorize("Creator")]
         public async Task<IActionResult> UpdateRegion([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
 
@@ -129,6 +137,7 @@ namespace REST.APIs.Controllers
         }
 
         [HttpDelete("{id:Guid}")]
+        [Authorize("Creator")]
         public async Task<IActionResult> DeleteRegion([FromRoute] Guid id)
         { 
 
